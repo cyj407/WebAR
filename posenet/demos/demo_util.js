@@ -581,6 +581,7 @@ export function checkModelPose(keypoints, minConfidence, ctx, scale = 1) {
   }
 }
 
+
 export function checkTrafficPose(keypoints, minConfidence, ctx, scale = 1) {
   const keypointRightWrist = keypoints[9];
   const keypointLeftWrist = keypoints[10];
@@ -697,19 +698,138 @@ export function checkAngryPose(keypoints, minConfidence, ctx, scale = 1) {
   }
 }
 
+
+export function checkBasketballPose(keypoints, minConfidence, ctx, scale = 1) {
+  const keypointRightWrist = keypoints[9];
+  const keypointLeftWrist = keypoints[10];
+  const keypointRightShoulder = keypoints[5];
+  const keypointLeftShoulder = keypoints[6];
+  const keypointRightElbow = keypoints[7];
+  const keypointLeftElbow = keypoints[8];
+
+  if (keypointLeftWrist.score < minConfidence
+    || keypointRightWrist.score < minConfidence
+    || keypointRightShoulder.score < minConfidence
+    || keypointLeftShoulder.score < minConfidence
+    || keypointRightElbow < minConfidence
+    || keypointLeftElbow < minConfidence) {
+    return;
+  }
+
+  var { y, x } = keypointLeftWrist.position;
+  var yLeftWrist = y;
+  var xLeftWrist = x;
+  var { y, x } = keypointRightWrist.position;
+  var yRightWrist = y;
+  var xRightWrist = x;
+  var { y, x } = keypointRightShoulder.position;
+  var yRightShoulder = y;
+  var xRightShoulder = x;
+  var { y, x } = keypointLeftShoulder.position;
+  var yLeftShoulder = y;
+  var xLeftShoulder = x;
+  var { y, x } = keypointRightElbow.position;
+  var yRightElbow = y;
+  var xRightElbow = x;
+  var { y, x } = keypointLeftElbow.position;
+  var yLeftElbow = y;
+  var xLeftElbow = x;
+
+  var shoulderWidth = xRightShoulder - xLeftShoulder;
+
+  // for right-handed
+  if (yRightShoulder - yRightElbow > 0.3 * shoulderWidth && yRightElbow < yRightShoulder
+    && xRightShoulder - xRightWrist > 0.1 * shoulderWidth && xRightElbow > xRightWrist
+    && yLeftShoulder - yLeftElbow > 0.3 * shoulderWidth
+    && xLeftWrist - xLeftElbow > 0.1 * shoulderWidth
+    && yLeftElbow - yLeftWrist > 0.3 * shoulderWidth) {
+    //drawCircle(ctx, 250 * scale, 300 * scale, 120, 'red', 30);
+    drawTick(ctx, 250 * scale, 300 * scale);
+    correct = true;
+    correct_time = new Date().getTime();
+  }
+
+  // for left-handed
+  if (yLeftShoulder - yLeftElbow > 0.3 * shoulderWidth && yLeftElbow < yLeftShoulder
+    && xLeftShoulder - xLeftWrist > 0.1 * shoulderWidth && xLeftElbow < xLeftWrist
+    && yRightShoulder - yRightElbow > 0.3 * shoulderWidth
+    && xRightWrist - xRightElbow > 0.1 * shoulderWidth
+    && yRightElbow - yRightWrist > 0.3 * shoulderWidth) {
+    //drawCircle(ctx, 250 * scale, 300 * scale, 120, 'red', 30);
+    drawTick(ctx, 250 * scale, 300 * scale);
+    clearInterval(intervalVal);
+    ++correct_cnt;
+    correct = true;
+    correct_time = new Date().getTime();
+  }
+}
+
+export function checkVolleyballPose(keypoints, minConfidence, ctx, scale = 1) {
+  const keypointRightWrist = keypoints[9];
+  const keypointLeftWrist = keypoints[10];
+  const keypointRightShoulder = keypoints[5];
+  const keypointLeftShoulder = keypoints[6];
+  const keypointRightElbow = keypoints[7];
+  const keypointLeftElbow = keypoints[8];
+
+  if (keypointLeftWrist.score < minConfidence
+    || keypointRightWrist.score < minConfidence
+    || keypointRightShoulder.score < minConfidence
+    || keypointLeftShoulder.score < minConfidence
+    || keypointRightElbow < minConfidence
+    || keypointLeftElbow < minConfidence) {
+    return;
+  }
+
+  var { y, x } = keypointLeftWrist.position;
+  var yLeftWrist = y;
+  var xLeftWrist = x;
+  var { y, x } = keypointRightWrist.position;
+  var yRightWrist = y;
+  var xRightWrist = x;
+  var { y, x } = keypointRightShoulder.position;
+  var yRightShoulder = y;
+  var xRightShoulder = x;
+  var { y, x } = keypointLeftShoulder.position;
+  var yLeftShoulder = y;
+  var xLeftShoulder = x;
+  var { y, x } = keypointRightElbow.position;
+  var yRightElbow = y;
+  var xRightElbow = x;
+  var { y, x } = keypointLeftElbow.position;
+  var yLeftElbow = y;
+  var xLeftElbow = x;
+
+  var shoulderWidth = xRightShoulder - xLeftShoulder;
+
+  if (yRightShoulder - yRightWrist > 0.3 * shoulderWidth && yRightWrist > yRightShoulder
+    && yLeftShoulder - yLeftWrist > 0.3 * shoulderWidth && yLeftWrist > yLeftShoulder
+    && xRightWrist - xLeftWrist < 0.2 * shoulderWidth && xRightWrist > xLeftWrist
+    && xLeftWrist > xLeftShoulder && xRightWrist < xRightShoulder) {
+    //drawCircle(ctx, 250 * scale, 300 * scale, 120, 'red', 30);
+    drawTick(ctx, 250 * scale, 300 * scale);
+    clearInterval(intervalVal);
+    ++correct_cnt;
+    correct = true;
+    correct_time = new Date().getTime();
+  }
+}
+
 //setup the question
 export function setupQuestion() {
   question_cnt = 0;
   correct_cnt = 0;
   questions = [];
-  questions.push("Make a 'Y' pose");
-  questions.push("Swag");
-  questions.push("Superman");
-  questions.push("Respect");
-  questions.push("Playing Violin");
-  questions.push("I'm a model");
-  questions.push("Directing Traffic");
-  questions.push("Angry");
+  // questions.push("Make a 'Y' pose");
+  // questions.push("Swag");
+  // questions.push("Superman");
+  // questions.push("Respect");
+  // questions.push("Playing Violin");
+  // questions.push("I'm a model");
+  // questions.push("Traffic");
+  // questions.push("Angry");
+  // questions.push("Make a shot");
+  questions.push("Catch a volleyball");
   /*****************
   can push more questions, and remember to add check function for the pose added.
   -> modify checkQuestionPose() and add the check function for the question.
@@ -758,10 +878,14 @@ export function checkQuestionPose(keypoints, minConfidence, ctx, scale = 1) {
     checkViolinPose(keypoints, minConfidence, ctx, scale);
   else if (cur_question == "I'm a model")
     checkModelPose(keypoints, minConfidence, ctx, scale);
-  else if (cur_question == "Directing Traffic")
+  else if (cur_question == "Traffic")
     checkTrafficPose(keypoints, minConfidence, ctx, scale);
   else if (cur_question == "Angry")
     checkAngryPose(keypoints, minConfidence, ctx, scale);
+  else if (cur_question == "Make a shot")
+    checkBasketballPose(keypoints, minConfidence, ctx, scale);
+  else if (cur_question == "Catch a volleyball")
+    checkVolleyballPose(keypoints, minConfidence, ctx, scale);
 }
 
 /**
